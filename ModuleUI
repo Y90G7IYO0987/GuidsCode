@@ -1,42 +1,55 @@
+--Код Обновлен От 19.04.2025
+
 local module = {}
 
 local tweenService = game:GetService('TweenService')
 
-function module.Animation1(UIScale:UIScale,Size1:IntValue,BaseSize:IntValue,wait_:NumberValue,cooldownTime:NumberValue, Color:StringValue,Button:TextButton,baseColor:StringValue)
+function module.Animation1(UIScale:UIScale,Size1:IntValue,BaseSize:IntValue,wait_:NumberValue, Color:StringValue,Button:TextButton,baseColor:StringValue)
 	local cooldown = false
-	if UIScale:IsA('UIScale') and UIScale ~= nil then 
-		if cooldown == false then 
-			cooldown = true 
-			
-			if Color ~= nil and Button ~= nil and Button:IsA('TextButton') and baseColor ~= nil then 
-				if Color == 'Green' then
-					tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(85, 255, 0)}):Play()										
-				elseif Color == 'Red' then 
-					tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(255, 0, 0)}):Play()
-				end
-				
-				UIScale.Scale = Size1
-				task.wait(wait_)
-				UIScale.Scale = BaseSize
-				if baseColor ~= nil and baseColor == 'White' then 
-					tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-				elseif baseColor == 'Black' then 
-					tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(0,0,0)}):Play()
-				end
-				
-			else 
-				UIScale.Scale = Size1
-				task.wait(wait_)
-				UIScale.Scale = BaseSize
+	if UIScale:IsA('UIScale') and UIScale ~= nil then 		
+
+		if Color ~= nil and Button ~= nil and Button:IsA('TextButton') and baseColor ~= nil then 
+			if Color == 'Green' then
+				tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(85, 255, 0)}):Play()										
+			elseif Color == 'Red' then 
+				tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(255, 0, 0)}):Play()
 			end
-			
-			
-			
-			task.wait(cooldownTime)
-			
-			cooldown = false
-		end
+
+			UIScale.Scale = Size1
+			task.wait(wait_)
+			UIScale.Scale = BaseSize
+
+			if baseColor ~= nil and baseColor == 'White' then 
+				tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+			elseif baseColor == 'Black' then 
+				tweenService:Create(Button,TweenInfo.new(0.3, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(0,0,0)}):Play()
+			end
+
+		else 
+			UIScale.Scale = Size1
+			task.wait(wait_)
+			UIScale.Scale = BaseSize
+		end					
 	end
 end
 
+function module.Animation2(wait_:NumberValue,parent:GuiButton,type_:NumberValue,color:StringValue,UIScale:UIScae,numberOfScale:number,baseValue:number,thickness:number)
+	if type_ == 1 then
+		if parent ~= nil then
+			local UIStroke = Instance.new('UIStroke',parent)
+			UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			UIStroke.Enabled = true
+			UIStroke.Thickness = thickness
+			task.wait(wait_)
+			UIStroke:Destroy()			
+		end
+	elseif type_ == 2 then
+		local UIScale_ = UIScale
+
+		UIScale_.Scale = numberOfScale
+		task.wait(wait_)
+		UIScale.Scale = baseValue
+	end
+
+end
 return module
