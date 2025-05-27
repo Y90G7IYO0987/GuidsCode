@@ -1,0 +1,82 @@
+repeat task.wait(4.5) until workspace:GetDescendants()
+
+local tweenService = game:GetService('TweenService')
+
+local prompt = script.Parent
+local opened, closed = prompt.Parent.Parent:WaitForChild('Opened'),prompt.Parent.Parent:WaitForChild('Closed')
+local needDoor = prompt.Parent.Parent:WaitForChild('Door')
+
+local animationTime = .3
+local hideTime = .5
+local cooldown = false
+
+local duration = .8
+local needKeyCode = 'F'
+
+local function hidePrompt()
+	prompt.Enabled = false
+	task.wait(hideTime)
+	prompt.Enabled = true
+end
+
+
+if not prompt:IsA('ProximityPrompt') then 
+	local needPrompt = Instance.new('ProximityPrompt', prompt.Parent)
+	needPrompt.ActionText = 'Open Door'
+	needPrompt.HoldDuration = duration
+	needPrompt.KeyboardKeyCode = Enum.KeyCode[needKeyCode]
+	needPrompt.RequiresLineOfSight = false
+	needPrompt.Enabled = true
+	needPrompt.Name = 'OpenPrompt'
+	script.Parent = needPrompt
+	
+	prompt = needPrompt
+
+	for _, needDel in prompt.Parent:GetChildren() do 
+		if not needDel:IsA('ProximityPrompt') then
+			needDel:Destroy()
+		end
+	end
+
+elseif prompt.RequiresLineOfSight == true then
+	prompt.RequiresLineOfSight = false
+end
+
+
+prompt['Triggered']:Connect(function(player)
+	if not cooldown then
+		cooldown = true
+
+		if prompt:IsA('ProximityPrompt') and prompt ~= nil then 
+			if prompt.ActionText == 'Open Door' then 
+				prompt.ActionText = 'Close Door'
+
+				hidePrompt()
+
+				tweenService:Create(needDoor, TweenInfo.new(animationTime, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {CFrame = opened.CFrame}):Play()
+
+			elseif prompt.ActionText == 'Close Door' then 
+				prompt.ActionText = 'Open Door'
+
+				hidePrompt()
+
+				tweenService:Create(needDoor, TweenInfo.new(animationTime, Enum.EasingStyle.Sine,Enum.EasingDirection.In), {CFrame = closed.CFrame}):Play()
+
+			end
+		else 
+			local needPrompt = Instance.new('ProximityPrompt', prompt.Parent)
+			needPrompt.ActionText = 'Open Door'
+			needPrompt.HoldDuration = duration
+			needPrompt.KeyboardKeyCode = Enum.KeyCode[needKeyCode]
+			needPrompt.RequiresLineOfSight = false
+			needPrompt.Enabled = true
+			needPrompt.Name = 'OpenPrompt'
+			script.Parent = needPrompt
+		end
+
+
+
+		cooldown = not cooldown
+	end
+
+end)
