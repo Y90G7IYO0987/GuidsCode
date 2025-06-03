@@ -1,0 +1,91 @@
+local module = {}
+
+local replicatedStorage = game:GetService('ReplicatedStorage')
+local tweenService = game:GetService('TweenService')
+local checkAnimation = replicatedStorage:WaitForChild('CheckAnimation')
+
+function module.animation1(uiGradient:UIGradient)
+	if checkAnimation.Value then 
+		while task.wait() do
+			local hue = tick() % 5 / 5 
+			local color1 = Color3.fromHSV(hue, 1, 1)
+			local color2 = Color3.fromHSV((hue + 0.3) % 1, 1, 1) 
+
+			uiGradient.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, color1),
+				ColorSequenceKeypoint.new(1, color2)
+			})
+			
+			if not checkAnimation.Value then break end
+		end				
+	end
+
+end
+
+function module.animation2(uiGradient:UIGradient)
+	local duration = 2
+	local steps = 120
+
+	local rand = math.random
+	
+	if checkAnimation.Value then 
+		while true do
+			local startHue1, startHue2 = rand(), (rand() + 0.5) % 1
+			local endHue1, endHue2 = rand(), (rand() + 0.5) % 1
+
+			local startColor1 = Color3.fromHSV(startHue1, 1, 1)
+			local startColor2 = Color3.fromHSV(startHue2, 1, 1)
+			local endColor1 = Color3.fromHSV(endHue1, 1, 1)
+			local endColor2 = Color3.fromHSV(endHue2, 1, 1)
+
+			local startTime = os.clock()
+			local endTime = startTime + duration
+
+			if not checkAnimation.Value then break end
+
+			while os.clock() < endTime do
+				local progress = (os.clock() - startTime) / duration
+				progress = progress * progress
+
+				local currentColor1 = startColor1:Lerp(endColor1, progress)
+				local currentColor2 = startColor2:Lerp(endColor2, progress)
+
+				uiGradient.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, currentColor1),
+					ColorSequenceKeypoint.new(1, currentColor2)
+				})
+
+				game:GetService("RunService").Heartbeat:Wait() 
+			end
+		end		
+	end
+end
+
+function module.animation3(uiGradient:UIGradient)
+	if checkAnimation.Value then 
+		while task.wait(0.4) do
+			local color1 = Color3.new(math.random(), math.random(), math.random())
+			local color2 = Color3.new(math.random(), math.random(), math.random())
+
+			uiGradient.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, color1), 
+				ColorSequenceKeypoint.new(1, color2)  
+			})
+			
+			if not checkAnimation then break end
+		end
+		
+	end
+end
+
+function module.animation4(button:Frame,tableColors,needColor)
+	if checkAnimation then 
+		if button:IsA('Frame') or button:IsA('TextButton') or button:IsA('TextLabel') then 
+			local selectedColor = tableColors[needColor] or Color3.new(1,1,1)
+			
+			tweenService:Create(button, TweenInfo.new(1.2,Enum.EasingStyle.Linear,Enum.EasingDirection.Out), {BackgroundColor3 = selectedColor}):Play()
+		end		
+	end
+end
+
+return module
