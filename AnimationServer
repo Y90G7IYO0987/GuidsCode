@@ -1,0 +1,9 @@
+local replicatedStorage = game:GetService('ReplicatedStorage')
+local remoteEvents = replicatedStorage:WaitForChild('RemoteEvents')
+local changeBoolean = remoteEvents:WaitForChild('ChangeBoolean')
+
+changeBoolean.OnServerEvent:Connect(function(player,value)
+	if player.Character then 
+		replicatedStorage:WaitForChild('CheckAnimation').Value = value
+	end
+end)
