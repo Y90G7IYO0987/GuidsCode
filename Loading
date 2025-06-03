@@ -1,0 +1,48 @@
+repeat task.wait(.3) until game.Players.LocalPlayer.PlayerGui:FindFirstChild('Loading')
+
+pcall(function()
+	
+	local currentCamera = workspace.CurrentCamera
+	local needPart = workspace:WaitForChild('LoadingPart')
+	
+	currentCamera.CameraType = Enum.CameraType.Scriptable
+	currentCamera.CFrame = needPart.CFrame
+	
+	game.Players.LocalPlayer.PlayerGui:WaitForChild('Loading').Enabled = true
+	
+	game:GetService('TweenService'):Create(game.Players.LocalPlayer.PlayerGui:WaitForChild('Loading'):WaitForChild('LoadingDecoration'),TweenInfo.new(1.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+	game:GetService('TweenService'):Create(game.Players.LocalPlayer.PlayerGui:WaitForChild('Loading'):WaitForChild('MainFrame'),TweenInfo.new(1.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+	
+	local assets = game:GetDescendants()
+	local contextProvider = game:GetService('ContentProvider')
+	
+	local player = game.Players.LocalPlayer
+	local playerGui = player.PlayerGui
+	
+	if not playerGui:FindFirstChild('Loading') then return end
+	
+	local loading = playerGui:WaitForChild('Loading')
+	
+	local mainFrame = loading:WaitForChild('MainFrame')
+	local loadingButton = mainFrame:WaitForChild('LoadingButton'):WaitForChild('title')
+	
+	local replicatedStorage = game:GetService('ReplicatedStorage')
+	local remoteEvents = replicatedStorage:WaitForChild('RemoteEvents')
+	local changeBoolean = remoteEvents:WaitForChild('ChangeBoolean')
+
+	for index, asset in assets do 
+		contextProvider:PreloadAsync({asset})
+		local p = index / #assets
+		loadingButton.Size = UDim2.new(p, 0,1,0)
+		task.wait()
+	end
+	
+	print('loaded game!')
+	
+	changeBoolean:FireServer(false)
+	
+	currentCamera.CameraType = Enum.CameraType.Custom
+	
+	loading:Destroy()
+	script:Destroy()
+end)
