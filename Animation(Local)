@@ -1,0 +1,28 @@
+repeat task.wait(1) until game:GetService('Players').LocalPlayer.Character ~= nil
+
+local replicatedStorage = game:GetService('ReplicatedStorage')
+local moduleAnimations = require(replicatedStorage:WaitForChild('ModuleAnimations'))
+
+local uiGradient = script.Parent:WaitForChild('UIGradient')
+
+local colors = {
+	Red = Color3.new(1, 0, 0),
+	Green = Color3.new(0, 1, 0),
+	Blue = Color3.new(0, 0, 1),
+	White = Color3.new(1, 1, 1),
+	Black = Color3.new(0, 0, 0),
+	Orange = Color3.new(1, 0.5, 0),
+	Violet = Color3.new(0.5, 0, 1)
+}
+
+local animationNumber = 1 -- 3 разных анимации с разными цветами
+local needAnimation = 'animation'..animationNumber
+local needColor = 'Violet' -- только для 4 анимации!
+
+-- анимации что нужно передать, какие аргументы все ниже:
+--1 moduleAnimations[needAnimation](uiGradient)
+--2 moduleAnimations[needAnimation](uiGradient)
+--3 moduleAnimations[needAnimation](uiGradient)
+--4 moduleAnimations[needAnimation](script.Parent,colors,needColor)
+
+moduleAnimations[needAnimation](uiGradient)
