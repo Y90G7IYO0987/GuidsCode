@@ -1,0 +1,41 @@
+local dataStoreService = game:GetService('DataStoreService'):GetDataStore('Player_Cash_01')
+
+local function playerAdded(player)
+	
+	local leaderstats = Instance.new('Folder',player)
+	leaderstats.Name = 'leaderstats'
+	
+	local coins = Instance.new('IntValue', leaderstats)
+	coins.Name = 'Coins'
+	
+	local crystals = Instance.new('IntValue', leaderstats)
+	crystals.Name = 'Crystals'
+	
+	local success,errorMessage = pcall(function()
+		local getData = dataStoreService:GetAsync(player.UserId)
+
+		if getData then 
+			coins.Value = getData[1]
+			crystals.Value = getData[2]
+		end
+	end)
+	
+	if success then 
+		print('Get Data For: '..dataStoreService.Name)
+	end	
+end
+
+local function playerRemoving(player)
+	local coins,crystals = player.leaderstats.Coins.Value,player.leaderstats.Crystals.Value
+	
+	local success,errorMessage = pcall(function()
+		dataStoreService:SetAsync(player.UserId,{coins,crystals})
+	end)
+	
+	if success then 
+		print('Saved: '..dataStoreService.Name)
+	end
+end
+
+game.Players.PlayerAdded:Connect(playerAdded)
+game.Players.PlayerRemoving:Connect(playerRemoving)
