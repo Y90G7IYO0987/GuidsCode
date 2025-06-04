@@ -1,6 +1,7 @@
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local remoteEvents = replicatedStorage:WaitForChild("RemoteEvents")
 local autoClickEvent = remoteEvents:WaitForChild("AutoClickEvent")
+local clickEvent = remoteEvents:WaitForChild('ClickEvent')
 
 local needFolder = 'leaderstats'
 local needValue = 'Coins'
@@ -10,6 +11,12 @@ for i = 1, 2 do
 	local bool = replicatedStorage:FindFirstChild("AutoClickBoolean"..i)
 	if bool then bool:Destroy() end
 end
+
+clickEvent.OnServerEvent:Connect(function(player, priceOfClick)
+	if player.Character and priceOfClick ~= nil then 
+		player[needFolder][needValue].Value += priceOfClick
+	end
+end)
 
 autoClickEvent.OnServerEvent:Connect(function(player, action, number)
 	if not player.Character then return end
