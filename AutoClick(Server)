@@ -1,0 +1,41 @@
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local remoteEvents = replicatedStorage:WaitForChild("RemoteEvents")
+local autoClickEvent = remoteEvents:WaitForChild("AutoClickEvent")
+
+local needFolder = 'leaderstats'
+local needValue = 'Coins'
+local price = 3
+
+for i = 1, 2 do
+	local bool = replicatedStorage:FindFirstChild("AutoClickBoolean"..i)
+	if bool then bool:Destroy() end
+end
+
+autoClickEvent.OnServerEvent:Connect(function(player, action, number)
+	if not player.Character then return end
+
+	local boolName = "AutoClickBoolean"..number
+	local bool = replicatedStorage:FindFirstChild(boolName)
+
+	if action == "Create Boolean" then
+		local otherNum = number == 1 and 2 or 1
+		local otherBool = replicatedStorage:FindFirstChild("AutoClickBoolean"..otherNum)
+		if otherBool then otherBool:Destroy() end
+
+		if not bool then
+			local newBool = Instance.new("BoolValue")
+			newBool.Name = boolName
+			newBool.Parent = replicatedStorage
+
+			task.spawn(function()
+				while newBool.Parent do
+					task.wait(0.5)
+					
+					player[needFolder][needValue].Value += price
+				end
+			end)
+		end
+	elseif action == "Remove Boolean" and bool then
+		bool:Destroy()
+	end
+end)
