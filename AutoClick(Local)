@@ -3,12 +3,18 @@ local player = Players.LocalPlayer
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local remoteEvents = replicatedStorage:WaitForChild("RemoteEvents")
 local autoClickEvent = remoteEvents:WaitForChild("AutoClickEvent")
+local clickEvent = remoteEvents:WaitForChild('ClickEvent')
 
 repeat task.wait() until player.Character
 
 local mainClickButton = script.Parent:WaitForChild("MainClickButton")
 local autoClick1 = script.Parent:WaitForChild("AutoClickButton")
 local autoClick2 = script.Parent:WaitForChild("AutoClickButton2")
+
+local priceOfClick = 5
+
+local cooldown = false
+local needWait = 0.3
 
 local buttons = {
 	{button = autoClick1, number = 1},
@@ -46,7 +52,15 @@ for _, btnData in pairs(buttons) do
 end
 
 mainClickButton.MouseButton1Click:Connect(function()
-	print("+1 Money")
+	if not cooldown then
+		cooldown = true
+		
+		clickEvent:FireServer(priceOfClick)
+		
+		task.wait(needWait)
+		
+		cooldown = false
+	end
 end)
 
 task.spawn(function()
