@@ -1,0 +1,36 @@
+repeat task.wait(4.5) until game:GetService('Players').LocalPlayer.Character ~= nil
+
+local abbreviations = {"", "K", "M", "B", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Un", "Duo", "Tre", "Qua", "Qui", "Sed", "Sep", "Oct", "Nov", "V"}
+
+local player = game.Players.LocalPlayer
+
+local needFrames = {
+	script.Parent:WaitForChild('Coins'),
+}
+
+
+local function Format(value, idp)
+	local ex = math.floor(math.log(math.max(1, math.abs(value)),1000))
+	local abbrevs = abbreviations [1 + ex] or ("e+"..ex)
+	local normal = math.floor(value * ((10 ^ idp) / (1000 ^ ex))) / (10 ^ idp)
+
+	return  ("%."..idp.."f%s"):format(normal, abbrevs)
+end
+
+for _, valueFrame in needFrames do 
+	if valueFrame ~= nil and valueFrame:IsA('Frame') then 
+		for _, valueButton in valueFrame:GetChildren() do
+
+			if not player:FindFirstChild('leaderstats') then warn('Напиши автору об ошибке он подскажет, ошибка: '..' leaderstats не найден в игроке'..' !') return end
+
+			if valueButton:IsA('GuiButton') and valueButton.Name == 'Main' and valueButton:FindFirstChild('ValueName') then
+				if not player.leaderstats:FindFirstChild(valueButton:FindFirstChild('ValueName').Value) then warn('Напиши автору об ошибке он подскажет, ошибка: '..'в leaderstats не найдена такая валюта: '..valueButton:FindFirstChild('ValueName').Value..' !') return end
+
+				while task.wait(.4) do
+					valueButton.Text = Format(player.leaderstats:FindFirstChild(valueButton:FindFirstChild('ValueName').Value).Value, 0)
+				end
+
+			end
+		end
+	end
+end
