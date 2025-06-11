@@ -16,6 +16,15 @@ local priceOfClick = 5
 local cooldown = false
 local needWait = 0.3
 
+local changeSize,baseSize = 1.2,1
+local needColor,baseColor = 'Green','White'
+local needWait = .3
+
+local modules = replicatedStorage:WaitForChild('Modules')
+local moduleUI = require(modules:WaitForChild('ModuleUI'))
+
+local agreeAnimations = true -- true/false 1 - вкл, 2 - выкл
+
 local buttons = {
 	{button = autoClick1, number = 1},
 	{button = autoClick2, number = 2}
@@ -28,13 +37,27 @@ local function updateButton(btn, isActive)
 	turn.TextColor3 = isActive and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(0, 255, 0)
 end
 
+local function animateButton(button)
+
+	if not modules and not moduleUI then return end
+	
+	if not button:FindFirstChildOfClass('UIScale') then return end
+	
+	if button:IsA('GuiButton') and button ~= nil and agreeAnimations then
+		print('ok!')
+		moduleUI.Animation1(button:FindFirstChildOfClass('UIScale'),changeSize,baseSize,needWait,needColor,button,baseColor)
+	end
+end
+
 for _, btnData in pairs(buttons) do
 	local btn = btnData.button
 	local num = btnData.number
 
 	btn.MouseButton1Click:Connect(function()
 		local isActive = replicatedStorage:FindFirstChild("AutoClickBoolean"..num)
-
+		
+		animateButton(btn)
+		
 		if isActive then
 			autoClickEvent:FireServer("Remove Boolean", num)
 			updateButton(btn, false)
@@ -54,6 +77,10 @@ end
 mainClickButton.MouseButton1Click:Connect(function()
 	if not cooldown then
 		cooldown = true
+		
+		if agreeAnimations then 
+			moduleUI.Animation1(mainClickButton:FindFirstChildOfClass('UIScale'),changeSize,baseSize,needWait,needColor,mainClickButton,baseColor)		
+		end
 		
 		clickEvent:FireServer(priceOfClick)
 		
