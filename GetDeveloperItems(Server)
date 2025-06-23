@@ -1,0 +1,38 @@
+local serverStorage = game:GetService('ServerStorage')
+local developerTools = serverStorage:WaitForChild('DeveloperTools')
+
+local tableOfDevelopersIds = {
+	-- Заполните поля, напишити айди разработчиков, 
+	-- пример:
+	--99999999999999,
+	--88888888888888,
+	7587061006,
+}
+
+local function issueDeveloperItems(player)
+	if player.Character or player.CharacterAdded:Wait() then
+		for _, devTool in developerTools:GetChildren() do 
+			if devTool:IsA('Tool') and devTool ~= nil then
+				local clonedTool = devTool:Clone()
+
+				clonedTool.Parent = player.Backpack
+			end 
+		end
+	end
+end
+
+local function playerAdded(player)
+	for _, playerId in ipairs(tableOfDevelopersIds) do
+		if playerId ~= nil then
+			if player.UserId == playerId then 
+				issueDeveloperItems(player)
+			else 
+				warn('You not developer!')
+			end			
+		end
+	end
+end
+
+
+
+game.Players.PlayerAdded:Connect(playerAdded)
