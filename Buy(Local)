@@ -1,0 +1,11 @@
+repeat task.wait(4.5) until game:GetService('Players').LocalPlayer.Character ~= nil
+
+local marketPlaceService =  game:GetService('MarketplaceService')
+
+local player = game.Players.LocalPlayer
+
+local gamepassID = 1274168539 -- Ваш Айди Пасса!
+
+script.Parent.MouseButton1Click:Connect(function()
+	marketPlaceService:PromptGamePassPurchase(player,gamepassID)
+end)
