@@ -1,0 +1,60 @@
+repeat task.wait(4.5) until workspace:GetDescendants()
+
+local marketPlaceService =  game:GetService('MarketplaceService')
+local serverStorage = game:GetService('ServerStorage')
+local developerTools = serverStorage:WaitForChild('DeveloperTools')
+
+local gamepassID = 1274168539 -- Ваш Айди Пасса!
+
+marketPlaceService.PromptGamePassPurchaseFinished:Connect(function(player,assetId,isPurchased)
+	print('good')
+	if player.Character then 
+		if gamepassID == assetId and isPurchased then
+			print('warned1')
+			if marketPlaceService:UserOwnsGamePassAsync(player.UserId, assetId) then
+				print('warned2')
+				local success,errorMessage = pcall(function()
+					for _, tool in developerTools:GetChildren() do 
+						if tool:IsA('Tool') and tool ~= nil then 
+							local clonedTool = tool:Clone()
+
+							clonedTool.Parent = player.Backpack
+						end
+					end					
+				end)
+
+				if success then 
+					warn('Подгрузка предметов!!!')
+				end
+			end
+		else 
+			if marketPlaceService:UserOwnsGamePassAsync(player.UserId, assetId) then
+				print('warned2')
+				local success,errorMessage = pcall(function()
+					for _, tool in developerTools:GetChildren() do 
+						if tool:IsA('Tool') and tool ~= nil then 
+
+							local toolsName = {
+								'Laser Pistol',
+								'PirateSaber',								
+							}
+
+							for _, toolName in toolsName do 
+								if not player.Backpack:FindFirstChild(toolName) then 
+									local clonedTool = tool:Clone()
+
+									clonedTool.Parent = player.Backpack
+								end
+							end						
+						end
+					end					
+				end)
+
+				if success then 
+					warn('Подгрузка предметов!!!')
+				end
+			end
+		end
+
+	end
+end)
