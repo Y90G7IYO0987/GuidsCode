@@ -1,0 +1,64 @@
+repeat task.wait(4.5) until workspace:GetDescendants()
+
+local folder = workspace:WaitForChild('Main'):WaitForChild('Coins')
+
+local function coinChecked(needCoin)
+	if needCoin:IsA('BasePart') or needCoin:IsA('UnionOperation') or needCoin:IsA('MeshPart') then 
+		return true 
+	else 
+		return nil
+	end
+end
+
+local function moneyBoost()
+	local randomNumber = math.random(1,50)
+
+	if randomNumber == 1 then 
+		return true
+	end
+end
+
+for _, coin in folder:GetChildren() do 
+	local check = coinChecked(coin)
+
+	if check then 
+		coin.Touched:Connect(function(otherPart)
+			local humanoid = otherPart.Parent:FindFirstChild('Humanoid')
+			local player = game.Players:GetPlayerFromCharacter(otherPart.Parent)			
+
+			if humanoid and coin.CanTouch then 
+				coin.CanTouch = false
+				coin.Transparency = 1
+
+				for _, children in coin:GetChildren() do 
+					if children:IsA('Texture') or children:IsA('Decal') then 
+						children.Transparency = 1
+					end
+				end
+
+				player:FindFirstChild('leaderstats'):FindFirstChild('Coins').Value += 3
+				player:FindFirstChild('leaderstats'):FindFirstChild('TotalCoins').Value += 3
+				
+				local boost = moneyBoost()
+
+				if boost then 
+					warn('Boosted!')
+					player:FindFirstChild('leaderstats'):FindFirstChild('Coins').Value += 5
+					player:FindFirstChild('leaderstats'):FindFirstChild('TotalCoins').Value += 5
+					boost = nil
+				end
+
+				task.wait(1)				
+
+				for _, children in coin:GetChildren() do 
+					if children:IsA('Texture') or children:IsA('Decal') then 
+						children.Transparency = 0
+					end
+				end
+
+				coin.CanTouch = true
+				coin.Transparency = 0
+			end
+		end)
+	end
+end
