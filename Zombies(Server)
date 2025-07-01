@@ -1,0 +1,12 @@
+local main = game:GetService('ReplicatedStorage'):WaitForChild('Main')
+local modules = main:WaitForChild('Modules')
+local zombiesModule = require(modules:WaitForChild('ZombiesModule'))
+
+local quantity = 50
+local enemyName = 'Zombie'
+local needParts = workspace:WaitForChild('NeedParts')
+local zombiesSpawn = needParts:WaitForChild('ZombiesSpawn')
+
+game.Players.PlayerAdded:Connect(function(player)
+	zombiesModule.Spawn(enemyName,quantity,zombiesSpawn,player)
+end)
