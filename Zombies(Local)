@@ -1,0 +1,12 @@
+local replicatedStorage = game:GetService('ReplicatedStorage')
+local main = replicatedStorage:WaitForChild('Main')
+local remotes = main:WaitForChild('Remotes')
+
+remotes:WaitForChild('DestroyEnemy').OnClientInvoke = function(enemy)
+	if enemy.Humanoid.Health >= 1 then return false end
+
+	if enemy.Humanoid.Health <= 0 then 
+		enemy:Destroy()
+		return true
+	end
+end
