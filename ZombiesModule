@@ -1,0 +1,125 @@
+local enemy = {}
+
+local replicatedStorage = game:GetService('ReplicatedStorage')
+local players = game:GetService('Players')
+
+local searchDistance = 50
+local attackDistance = 4
+
+local function setUpBlockSize(quantity,block)
+	if block.Size.X < quantity then
+		block.Size = Vector3.new(quantity+1,block.Size.Y,block.Size.Z)
+	end
+end
+
+function FindTarget(enemy)
+	local players = players:GetPlayers()
+	local targetDistance = searchDistance
+	local target = nil
+
+	for i, player in players do
+		local character = player.Character 
+		if not character then return end 
+		local humanoid = character:FindFirstChild('Humanoid')
+		local primaryPart = character.PrimaryPart
+		if not primaryPart or not humanoid or humanoid.Health <= 0 then return end
+
+		local distance = (primaryPart.Position - enemy.PrimaryPart.Position).Magnitude
+		if distance < targetDistance then 
+			targetDistance = distance
+			target = character
+		end
+	end 
+
+	return target, targetDistance
+
+end
+
+function Update(enemy)
+	local target,targetDistance = FindTarget(enemy)
+	if target then 
+		if targetDistance < attackDistance then 
+			target.Humanoid:TakeDamage(5)
+		else 
+			enemy.Humanoid:MoveTo(target.PrimaryPart.Position)
+		end
+	end
+end
+
+function enemy.Spawn(enemyName, quantity,spawnPart,player)
+	local players = players:GetPlayers()
+
+	local zombieTemplate = replicatedStorage.Main.Enemy:FindFirstChild(enemyName)
+	if not zombieTemplate then 
+		return 
+	end
+
+	setUpBlockSize(quantity,spawnPart)
+
+	local spawnArea = {
+		Position = spawnPart.Position,
+		Size = spawnPart.Size.X
+	}
+
+	local spawnedZombies = {}
+
+	for i = 1, quantity do
+		local attempts = 0
+		local canSpawn = false
+		local randomPosition
+
+		while not canSpawn and attempts < 20 do
+			attempts += 1
+
+			local positionX = spawnArea.Position.X + math.random(-spawnArea.Size, spawnArea.Size)
+			local positionZ = spawnArea.Position.Z + math.random(-spawnArea.Size, spawnArea.Size)
+			randomPosition = Vector3.new(positionX, spawnArea.Position.Y, positionZ)
+
+			canSpawn = true
+			for _, pos in pairs(spawnedZombies) do
+				if (pos - randomPosition).Magnitude < 5 then
+					canSpawn = false
+					break
+				end
+			end
+		end
+
+		if canSpawn then
+			task.wait()
+			local newEnemy = zombieTemplate:Clone()
+			newEnemy.Parent = workspace.Enemys
+			newEnemy:SetPrimaryPartCFrame(CFrame.new(randomPosition))
+			table.insert(spawnedZombies, randomPosition)
+
+			local check = false
+
+			task.spawn(function()
+				while not check do
+					Update(newEnemy)
+					task.wait(0.5)
+
+					local success,enemyDestroy = pcall(function()
+						return replicatedStorage:WaitForChild('Main'):WaitForChild('Remotes'):WaitForChild('DestroyEnemy'):InvokeClient(player,newEnemy)
+					end)
+
+					if enemyDestroy then check = true break end
+
+					print(check)
+
+					if not check then 
+						if not player.Character or player.Character.Humanoid.Health <= 0 then
+							warn("You Died!")
+
+							newEnemy:Destroy()
+
+							break
+						end					
+					end				
+				end
+			end)
+		end
+
+	end
+end
+
+return enemy
